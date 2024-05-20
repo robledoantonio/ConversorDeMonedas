@@ -1,17 +1,11 @@
-import com.google.gson.Gson;
+package com.alura.conversordemonedas.principal;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import com.google.gson.JsonObject;
+import com.alura.conversordemonedas.operations.RequestConversion;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        HttpClient client = HttpClient.newHttpClient();
-        Gson gson = new Gson();
 
         while (true) {
             // Mostrar el menú
@@ -73,38 +67,22 @@ public class Main {
             System.out.print("Ingrese el valor que desea convertir: ");
             double amount = scanner.nextDouble();
 
-            // URL de la API con parámetros dinámicos
-            String apiUrl = String.format(
-                    "https://exchange-rates.abstractapi.com/v1/live/?api_key=17a857dc418448778bd03db51e4c31ff&base=%s&target=%s",
-                    baseCurrency, targetCurrency);
-
             try {
-                // Crear la solicitud HTTP
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI(apiUrl))
-                        .header("Accept", "application/json")
-                        .GET()
-                        .build();
-
-                // Enviar la solicitud y obtener la respuesta
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                // Convertir la respuesta JSON a un objeto Gson
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-
                 // Obtener el tipo de cambio
-                JsonObject exchangeRates = jsonResponse.getAsJsonObject("exchange_rates");
-                double exchangeRate = exchangeRates.get(targetCurrency).getAsDouble();
+                RequestConversion operation = new RequestConversion();
+
+                double exchangeRate = operation.getExchangeRate(baseCurrency, targetCurrency);
 
                 // Calcular el valor convertido
-                double convertedValue = amount * exchangeRate;
+                double convertedValue = operation.convertCurrency(amount, exchangeRate);
 
                 // Mostrar el resultado en pantalla
-                System.out.printf("El valor %.2f [%s] corresponde al valor final de --> %.2f [%s]%n",
+                System.out.printf("El valor %.2f [%s] corresponde al valor final de %.2f [%s]%n",
                         amount, baseCurrency, convertedValue, targetCurrency);
 
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("Ocurrió un error al intentar convertir la moneda. Por favor, intente de nuevo.");
             }
         }
 
