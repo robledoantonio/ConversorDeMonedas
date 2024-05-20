@@ -13,3 +13,5 @@ Este es un simple programa de consola en Java que permite convertir entre difere
   - Peso colombiano (COP) a Dólar (USD)
 
 - Interacción intuitiva con el usuario a través de la consola.
+
+*La converion de peso colombiano no está disponible en la API de abstractapi.com.
